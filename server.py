@@ -17,10 +17,9 @@ class MyHandler(BaseHTTPRequestHandler):
         self.set_headers()
 
     def do_GET(self):
-        connector = sqlite3.connect(DB)
-        handler = connector.execute('select * from temperature limit 144')
-        data = handler.fetchall()
-        print(data)
+        connection = sqlite3.connect(DB)
+        cursor = connection.execute('select * from temperature limit 60')
+        data = cursor.fetchall()
         result = []
         for row in data:
             result.append({
@@ -29,11 +28,9 @@ class MyHandler(BaseHTTPRequestHandler):
                 'humidity': row[2]
             })
         json_data = json.dumps(result)
-        template_file = open(os.path.join(PATH, 'index.html'))
-        template = template_file.readlines()
-        template = "".join(template)
-        template_file.close()
-        template = template.replace('__DATA__', str(json_data))
+        with open(os.path.join(PATH, 'index.html')) as template_file:
+            template = template_file.read()
+        template = template.replace('__DATA__', json_data)
         self.set_headers()
         self.wfile.write(bytes(template, "utf-8"))
 
