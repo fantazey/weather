@@ -18,7 +18,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         connection = sqlite3.connect(DB)
-        cursor = connection.execute('select * from temperature limit 60')
+        cursor = connection.execute('select * from temperature order by date desc limit 60')
         data = cursor.fetchall()
         result = []
         for row in data:
