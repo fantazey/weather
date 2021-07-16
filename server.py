@@ -5,6 +5,13 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 DB = os.path.join(PATH, 'db.sqlite')
+SELECT_QUERY = """
+SELECT * FROM (
+    SELECT * FROM temperature 
+    ORDER BY date DESC 
+    LIMIT 100
+) ORDER BY date ASC
+"""
 
 
 class MyHandler(BaseHTTPRequestHandler):
@@ -18,7 +25,7 @@ class MyHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         connection = sqlite3.connect(DB)
-        cursor = connection.execute('select * from temperature order by date desc limit 60')
+        cursor = connection.execute(SELECT_QUERY)
         data = cursor.fetchall()
         result = []
         for row in data:
